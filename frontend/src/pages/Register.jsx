@@ -8,11 +8,32 @@ export default function Register() {
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    console.log("Register:", name, email, password);
-    // TODO: call backend API here later
+  e.preventDefault();
+  try {
+    const res = await fetch("http://localhost:5000/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", 
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || JSON.stringify(data) || "Register failed");
+      return;
+    }
+
+    
+    localStorage.setItem("userName", data.name || name);
+    localStorage.setItem("userEmail", data.email || email);
+
     navigate("/login");
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Cannot connect to backend. Is Flask running on port 5000?");
+  }
+};
 
   return (
     <div className="p-6 bg-[#0B0B12] min-h-screen flex items-center justify-center">
