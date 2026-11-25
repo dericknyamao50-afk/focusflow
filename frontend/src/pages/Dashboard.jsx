@@ -10,6 +10,7 @@ const priorities = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem("token");
 
   const getUserName = () => {
 
@@ -57,6 +58,21 @@ const todayLabel = new Date().toLocaleDateString("en-US", {
   year: "numeric",
 });
 
+const handleLogout = async () => {
+  try {
+    await fetch("http://localhost:5000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (e) {}
+  localStorage.removeItem("userName");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  navigate("/login");
+  window.location.reload();
+};
+
   return (
     <div style={{ minHeight: "100vh", background: "#F4F4F0", color: "#111", fontFamily: "Arial, sans-serif", margin: 0 }}>
       
@@ -83,10 +99,19 @@ const todayLabel = new Date().toLocaleDateString("en-US", {
               </Link>
             </nav>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "12px" }}>
-            <Link to="/login" style={{ color: "#a1a1aa", textDecoration: "none" }}>Log in</Link>
-            <Link to="/register" style={{ background: "white", color: "black", padding: "6px 12px", fontWeight: "600", textDecoration: "none" }}>Create account</Link>
-          </div>
+         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+  {!isLoggedIn ? (
+    <>
+      <Link to="/login" style={{ color: "#a1a1aa", textDecoration: "none" }}>Log in</Link>
+      <Link to="/register" style={{ background: "white", color: "black", padding: "8px 16px", borderRadius: "8px", textDecoration: "none" }}>Create account</Link>
+    </>
+  ) : (
+    <>
+      <Link to="/profile" style={{ color: "#a1a1aa", textDecoration: "none" }}>{userName || "Profile"}</Link>
+      <button onClick={handleLogout} style={{ background: "white", color: "black", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer" }}>Log out</button>
+    </>
+  )}
+     </div>
         </div>
 
         {/* HERO */}

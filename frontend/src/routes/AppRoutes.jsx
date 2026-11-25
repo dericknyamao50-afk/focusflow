@@ -13,6 +13,7 @@ import Notes from "../pages/Notes";
 import GitHubActivity from "../pages/GitHubActivity";
 import {Analytics} from "../pages/Analytics";
 import NotFound from "../pages/NotFound";
+import Profile from "../pages/Profile";
 
 const AppRoutes = () => {
   return (
@@ -37,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/notes" element={<Notes />} />
         <Route path="/github-activity" element={<GitHubActivity />} />
         <Route path="/analytics" element={<Analytics />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
 
       {/* Fallback 404 Route */}

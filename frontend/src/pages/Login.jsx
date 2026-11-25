@@ -8,20 +8,40 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin=async (e) => {
-        e.preventDefault();
-        
-     localStorage.setItem("token", "demo-token");
-    const nameFromEmail = email.split("@")[0].replace(/[._-]/g, " ").replace(/\d+/g, "").trim();
-    const displayName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
-    localStorage.setItem("user", JSON.stringify({ name: displayName, email: email }));
+    const [error, setError] = useState("");
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Invalid email or password");
+      return; 
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     navigate("/dashboard");
-    };
+
+  } catch (err) {
+    setError("Server not running. Start backend.");
+  }
+};
     
     return (
         <div className="min-h-screen bg-[#0B0B12] flex items-center justify-center">
       <form onSubmit={handleLogin} className="bg-[#12121C] border border-[#2A2A3D] p-8 rounded-xl w-[90%] max-w-md">
         <h1 className="text-white text-2xl font-bold">FocusFlow</h1>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <p className="text-[#9CA3AF] mb-6">Welcome back</p>
         <Input label="Email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com" />
         <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
